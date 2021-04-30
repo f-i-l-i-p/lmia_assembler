@@ -58,8 +58,14 @@ class Assembler:
         """
         assembled = []
 
-        for num, instruction in enumerate(instructions):
-            assembled.append(self.assemble_instruction(num, instruction))
+        for num, instr in enumerate(instructions):
+            striped_instr = instr.rstrip()
+
+            # Skip if empty instruction
+            if not striped_instr:
+                continue
+
+            assembled.append(self.assemble_instruction(num, striped_instr))
 
         return assembled
 
@@ -70,7 +76,8 @@ class Assembler:
         parts = instruction.split(', ')
 
         if len(parts) != 4:
-            raise SyntaxError(f"Syntax error at line {line_num}")
+            raise SyntaxError(
+                f"Syntax error at line {line_num}:\n{instruction}")
 
         op_code = self.parse_op_code(parts[0])
         register = self.parse_register(parts[1])
