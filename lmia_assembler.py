@@ -111,7 +111,14 @@ class Assembler:
         """
         Returns an address as a hex string.
         """
-        return address.split('x')[1][:2]
+        length = 2  # Number of digits that the address should be
+
+        hex = address.split('x')[1][:2]
+
+        if len(hex) > length:
+            raise SyntaxError("Address is too long.")
+
+        return '0' * (length - len(hex)) + hex
 
     def to_hex(self, num: int) -> str:
         """
