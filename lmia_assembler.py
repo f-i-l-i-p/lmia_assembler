@@ -43,6 +43,7 @@ class Assembler:
         'STR': 0x1,
         'AND': 0x4,
         'LSR': 0x5,
+        'BRA': 0x8,
     }
     registers = {
         'r0': 0x0,
@@ -56,18 +57,34 @@ class Assembler:
         Takes a list of instructions that should be assembled.
         Returns a list with assembled instructions.
         """
+        cleaned_instructions = self.clean_instructions(instructions)
+
         assembled = []
 
-        for num, instr in enumerate(instructions):
-            striped_instr = instr.rstrip()
-
-            # Skip if empty instruction
-            if not striped_instr:
-                continue
-
-            assembled.append(self.assemble_instruction(num, striped_instr))
+        for num, instr in enumerate(cleaned_instructions):
+            assembled.append(self.assemble_instruction(num, instr))
 
         return assembled
+
+    def clean_instructions(self, instructions: List[str]) -> List[str]:
+        """
+        Removes comments, removes empty instructions, and strips empty characters.
+        """
+        new_instructions = []
+
+        for instr in instructions:
+            # Remove comment
+            instr = instr.split(';')[0]
+
+            # Strip empty characters
+            instr = instr.strip()
+
+            # Only add non-empty instructions
+            if instr:
+                new_instructions.append(instr)
+
+        print(new_instructions)
+        return new_instructions
 
     def assemble_instruction(self, line_num: int, instruction: str) -> str:
         """
