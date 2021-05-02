@@ -1,5 +1,5 @@
 import sys
-from typing import List
+from typing import List, Dict
 
 args = sys.argv[1:]
 
@@ -52,12 +52,18 @@ class Assembler:
         'r3': 0x3,
     }
 
+    def __init__(self):
+        # Dict for mapping jump tags to memory addresses
+        self.jump_tags: Dict[str, int] = dict()
+
     def assemble(self, instructions: List[str]) -> List[str]:
         """
         Takes a list of instructions that should be assembled.
         Returns a list with assembled instructions.
         """
         cleaned_instructions = self.clean_instructions(instructions)
+
+        self.map_jump_tags(cleaned_instructions)
 
         assembled = []
 
@@ -68,7 +74,7 @@ class Assembler:
 
     def clean_instructions(self, instructions: List[str]) -> List[str]:
         """
-        Removes comments, removes empty instructions, and strips empty characters.
+        Removes comments, removes empty instructions, and strips empty characters,
         """
         new_instructions = []
 
@@ -83,8 +89,23 @@ class Assembler:
             if instr:
                 new_instructions.append(instr)
 
-        print(new_instructions)
         return new_instructions
+
+    def map_jump_tags(self, instructions: List[str]) -> None:
+        """
+        Maps the jump tags to their corresponding address.
+        Also removes the jump tags from the instructions list.
+        """
+        self.jump_tags.clear()
+
+        for num, instr in enumerate(instructions):
+            # If jump tag
+            if ':' in instr:
+                name = instr.split(':')[0]
+                self.jump_tags[name] = num
+
+                instructions.remove(instr)
+
 
     def assemble_instruction(self, line_num: int, instruction: str) -> str:
         """
@@ -99,7 +120,7 @@ class Assembler:
         op_code = self.parse_op_code(parts[0])
         register = self.parse_register(parts[1])
         m = self.parse_m(parts[2])
-        address = self.parse_address(parts[3])
+        address = self.parse_address(parts[3], line_num)
 
         return f"{self.to_hex(op_code)}{self.to_hex(register + m)}{address}"
 
@@ -124,24 +145,55 @@ class Assembler:
 
         return int(m[0]) * 2 + int(m[1]) * 1
 
-    def parse_address(self, address: str) -> str:
+    def parse_address(self, address: str, line_num: str) -> str:
         """
         Returns an address as a hex string.
         """
         length = 2  # Number of digits that the address should be
 
-        hex = address.split('x')[1][:2]
+        # If jump tag
+        if address.isidentifier():
+            jump_address = self.jump_tags[address]
 
-        if len(hex) > length:
-            raise SyntaxError("Address is too long.")
+            # Convert to relative address because thats what lmia uses
+            relative_address = jump_address - line_num - 1
 
-        return '0' * (length - len(hex)) + hex
+            hex_str = self.to_hex(relative_address, length)
 
-    def to_hex(self, num: int) -> str:
+        # If hex address
+        else:
+            hex_str = address.split('x')[1]
+
+            if len(hex_str) > length:
+                raise SyntaxError("Address is too long.")
+
+            hex_str = '0' * (length - len(hex_str)) + hex_str
+
+        return hex_str
+
+    def to_hex(self, num: int, length: int = 0) -> str:
         """
-        Converts an integer to a hex string.
+        Converts an integer to a hex string. length is the minimum number of hex-digits.
         """
-        return hex(num).split('x')[1]
+        # Create hex and remove '0x'
+        hex_str = hex(num).split('x')[1]
+        # Add leading 0:s if too short
+        hex_str = '0' * (length - len(hex_str)) + hex_str
+
+        # Set first bit to 1 if num is negative
+        if num < 0:
+            # Convert to binary and remove 0b
+            bin_str = bin(int(hex_str[0], 16))[2:]
+            # Make sure it's 4 digits
+            bin_str = '0' * (4 - len(bin_str)) + bin_str
+
+            # Set first bit to 1
+            bin_str = '1' + bin_str[1:]
+
+            # Convert bin_str to hex and update hex_str
+            hex_str = hex(int(bin_str, 2))[2:] + hex_str[1:]
+
+        return hex_str
 
 
 inputFile = loadInputFile()
