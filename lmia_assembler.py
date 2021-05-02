@@ -46,10 +46,18 @@ class Assembler:
         'BRA': 0x8,
     }
     registers = {
-        'r0': 0x0,
-        'r1': 0x1,
-        'r2': 0x2,
-        'r3': 0x3,
+        'na': 0b00,
+        'r0': 0b00,
+        'r1': 0b01,
+        'r2': 0b10,
+        'r3': 0b11,
+    }
+    addressing_modes = {
+        'na': 0b00,
+        'm0': 0b00,
+        'm1': 0b01,
+        'm2': 0b10,
+        'm3': 0b11,
     }
 
     def __init__(self):
@@ -119,10 +127,10 @@ class Assembler:
 
         op_code = self.parse_op_code(parts[0])
         register = self.parse_register(parts[1])
-        m = self.parse_m(parts[2])
+        addressing_mode = self.parse_addressing_mode(parts[2])
         address = self.parse_address(parts[3], line_num)
 
-        return f"{self.to_hex(op_code)}{self.to_hex(register + m)}{address}"
+        return f"{self.to_hex(op_code)}{self.to_hex(register + addressing_mode)}{address}"
 
     def parse_op_code(self, op_code: str) -> int:
         """
@@ -136,14 +144,11 @@ class Assembler:
         """
         return self.registers[register]
 
-    def parse_m(self, m: str) -> int:
+    def parse_addressing_mode(self, addressing_mode: str) -> int:
         """
         Returns m as a decimal number.
         """
-        if len(m) != 2:
-            raise SyntaxError("m value should be two binary digits")
-
-        return int(m[0]) * 2 + int(m[1]) * 1
+        return self.addressing_modes[addressing_mode]
 
     def parse_address(self, address: str, line_num: str) -> str:
         """
@@ -151,8 +156,12 @@ class Assembler:
         """
         length = 2  # Number of digits that the address should be
 
+        # If N/A
+        if address == 'na':
+            return "00"
+
         # If jump tag
-        if address.isidentifier():
+        elif address.isidentifier():
             jump_address = self.jump_tags[address]
 
             # Convert to relative address because thats what lmia uses
