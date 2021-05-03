@@ -20,12 +20,20 @@ def loadInputFile():
 def output(data: List[str]):
     useOutputFile = len(args) == 2
 
+    data_with_line_numbers = []
+
+    # Add line numbers
+    for num, line in enumerate(data):
+        hex_str = hex(num)[2:]
+        hex_str = '0' * (2 - len(hex_str)) + hex_str
+        data_with_line_numbers.append(f"{hex_str} {line}")
+
     # Write to file
     if useOutputFile:
         filePath = args[1]
 
         f = open(filePath, "w")
-        f.writelines(data)
+        f.writelines(data_with_line_numbers)
         f.close()
 
         print(f"Done! Written to {filePath}")
@@ -33,7 +41,7 @@ def output(data: List[str]):
     # Print to terminal
     else:
         print("Done!\n")
-        for line in data:
+        for line in data_with_line_numbers:
             print(line)
 
 
