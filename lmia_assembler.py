@@ -138,7 +138,7 @@ class Assembler:
         addressing_mode = self.parse_addressing_mode(parts[2])
         address = self.parse_address(parts[3], line_num)
 
-        return f"{self.to_hex(op_code)}{self.to_hex(register + addressing_mode)}{address}"
+        return f"{self.to_hex(op_code)}{self.to_hex(register * 4 + addressing_mode)}{address}"
 
     def parse_op_code(self, op_code: str) -> int:
         """
