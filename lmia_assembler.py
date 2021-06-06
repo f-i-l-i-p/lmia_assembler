@@ -28,7 +28,7 @@ def output(data: List[str]):
     for num, line in enumerate(data):
         hex_str = hex(num)[2:]
         hex_str = '0' * (2 - len(hex_str)) + hex_str
-        data_with_line_numbers.append(f"{hex_str} {line}")
+        data_with_line_numbers.append(f"{hex_str}: {line}")
 
     # Write to file
     if useOutputFile:
