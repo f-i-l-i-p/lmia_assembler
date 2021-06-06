@@ -3,15 +3,6 @@
 import sys
 from typing import List, Dict
 
-args = sys.argv[1:]
-
-if (len(args) == 0):
-    print("No arguments given. Specify the path to the file that should be assembled.")
-    exit(0)
-if (len(args) > 2):
-    print("Too many arguments! Maximum is 2: Input file path, and Output file path.")
-    exit(0)
-
 
 def loadInputFile():
     filePath = args[0]
@@ -125,7 +116,6 @@ class Assembler:
 
                 instructions.remove(instr)
 
-
     def assemble_instruction(self, line_num: int, instruction: str) -> str:
         """
         Assembles a given instruction.
@@ -216,10 +206,20 @@ class Assembler:
         return hex_str
 
 
-inputFile = loadInputFile()
+if __name__ == '__main__':
+    args = sys.argv[1:]
 
-assembler = Assembler()
-assembled = assembler.assemble(inputFile.readlines())
-output(assembled)
+    if (len(args) == 0):
+        print("No arguments given. Specify the path to the file that should be assembled.")
+        exit(0)
+    if (len(args) > 2):
+        print("Too many arguments! Maximum is 2: Input file path, and Output file path.")
+        exit(0)
 
-inputFile.close()
+    inputFile = loadInputFile()
+
+    assembler = Assembler()
+    assembled = assembler.assemble(inputFile.readlines())
+    output(assembled)
+
+    inputFile.close()
