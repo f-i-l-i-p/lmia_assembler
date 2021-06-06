@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys
 from typing import List, Dict
 
@@ -51,6 +53,7 @@ class Assembler:
         'STR': 0x1,
         'AND': 0x4,
         'LSR': 0x5,
+        'ADD': 0x6,
         'BRA': 0x8,
     }
     registers = {
@@ -138,7 +141,7 @@ class Assembler:
         addressing_mode = self.parse_addressing_mode(parts[2])
         address = self.parse_address(parts[3], line_num)
 
-        return f"{self.to_hex(op_code)}{self.to_hex(register + addressing_mode)}{address}"
+        return f"{self.to_hex(op_code)}{self.to_hex(register * 4 + addressing_mode)}{address}"
 
     def parse_op_code(self, op_code: str) -> int:
         """
