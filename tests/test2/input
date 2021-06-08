@@ -3,5 +3,5 @@ $address1 = 0xA3
 $address2 = 0xA4
 
 main:
-    ldr r0, $address1 ; load data from $address1 to register 0
-    str r0, $address2 ; write data from register 0 to $address2
+    ldr r0, $address1       ; load data from $address1 to register 0
+    str r0, $address2       ; write data from register 0 to $address2
