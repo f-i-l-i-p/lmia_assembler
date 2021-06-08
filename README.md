@@ -58,17 +58,14 @@ start:
     sub r0, $value2         ; subtract with value at address $value2
 
     bge load1               ; jump to load1 if $value1 was greater or equal to $value2
-
     ; if no jump was made, fall through to load2
 
 load2:
     ldr r1, $value2         ; load value from address $value2
-
     bra save                ; jump to save
 
 load1:
     ldr r1, $value1         ; load value from address $value2
-
     ; fall through to save
 
 save:
