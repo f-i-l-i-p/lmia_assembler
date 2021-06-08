@@ -158,7 +158,14 @@ def parse_instruction(line_count: int, instruction_count: int, line: str,
 
 
 def calculate_relative_address_jump(instruction_count: int, destination_address: int) -> int:
-    return destination_address - instruction_count - 1
+    relative = destination_address - instruction_count - 1
+
+    # If it jumps backward
+    if relative < 0:
+        # Add more to make an overflow
+        relative += 2**8
+
+    return relative
 
 
 # ===========================================================================
