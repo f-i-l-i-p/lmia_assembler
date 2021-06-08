@@ -1,23 +1,88 @@
-# lmia_assembler
+# lmia assembler
 
-**Output to terminal**
+## How to use
+
+Give the path to the file that sould be assembled and it outputs the assembled instructions.
 ```bash
-$ python3 lmia_assembler.py input_file_name
-```
-**Output to file**
-```bash
-$ python3 lmia_assembler.py input_file_name output_file_name
+python3 assembler.py input_file_name
 ```
 
-### Example code
-```
+<br/>
+
+## Examples
+### Example 1
+Input:
+``` asm
 main:
-    LDR, r1, m0, 0x10  ; load register 1 from 0x10
+    ; add value 0x1 to register 2
+    add r2, 0x1
+```
+Output:
+```
+00: 2801
+```
 
-loop:
-    ; duplicate value in 0x10
-    ADD, r1, m0, 0x10
-    STR, r1, m0, 0x10
+<br/>
 
-    BRA, na, na, loop  ; loop
+### Example 2
+Input:
+``` asm
+; define constants!
+$address1 = 0xA3
+$address2 = 0xA4
+
+main:
+    ldr r0, $address1 ; load data from $address1 to register 0
+    str r0, $address2 ; write data from register 0 to $address2
+```
+Output:
+```
+00: 00A3
+01: 10A4
+```
+
+<br/>
+
+
+### Example 3
+Input:
+``` assembly
+$result = 0xE0
+$value1 = 0xE1
+$value2 = 0xE2
+
+; copy the largest of $value1 and $value2 to $result
+
+start:
+    ldr r0, $value1 ; load value from $value1
+    sub r0, $value2 ; subtract with $value2
+
+    bge load1       ; jump to load1 if $value1 was greater or equal to $value2
+
+    ; if no jump was made, fall through to load2
+
+load2:
+    ldr r1, $value2 ; load value form $value2
+
+    bra save        ; jump to save
+
+load1:
+    ldr r1, $value1 ; load value form $value2
+
+    ; fall through to save
+
+save:
+    str r1, $result ; store the value in $result
+    halt
+```
+Output:
+```
+00: 00E1
+01: 30E2
+02: A002
+03: 04E2
+04: 6001
+05: 04E1
+06: 14E0
+07: 8000
 ```
