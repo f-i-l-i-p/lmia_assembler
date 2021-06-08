@@ -2,6 +2,7 @@
 
 from typing import List, Dict, NamedTuple
 import re
+import sys
 
 
 class Operation(NamedTuple):
@@ -247,7 +248,21 @@ def assemble(lines: List[str], line_numbers: bool = True) -> List[str]:
 
     bits = convert_to_bits(0, 0, lines, symbols, OP_CODES, list())
 
-    if line_numbers:
-        return [f'{hex(index)[2:].upper().zfill(2)}: {hex(line)[2:].upper().zfill(4)}' for index, line in enumerate(bits)]
-    else:
-        return [hex(index)[2:].upper().zfill(2) for line in bits]
+    return [f'{hex(index)[2:].upper().zfill(2)}: {hex(line)[2:].upper().zfill(4)}' for index, line in enumerate(bits)]
+
+
+if __name__ == '__main__':
+    args = sys.argv[1:]
+
+    if (len(args) == 0):
+        print("Missing argument. Specify the path to the file that should be assembled.")
+        exit(0)
+
+    inputFile = open(args[0])
+    lines = inputFile.readlines()
+    inputFile.close()
+
+    assembled = assemble(lines)
+
+    for line in assembled:
+        print(line)
