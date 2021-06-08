@@ -1,22 +1,14 @@
 import os
-from lmia_assembler import Assembler
+import assembler
 
 
 def run_test(path: str):
     input_lines = open(path + '/input', "r").readlines()
-    expected_output_lines = open(path + '/output', "r").readlines()
+    expected_output_lines = open(path + '/output', "r").read().splitlines()
 
-    assembler = Assembler()
     assembled = assembler.assemble(input_lines)
 
-    # Add line numbers
-    data_with_line_numbers = []
-    for num, line in enumerate(assembled):
-        hex_str = hex(num)[2:]
-        hex_str = '0' * (2 - len(hex_str)) + hex_str
-        data_with_line_numbers.append(f"{hex_str}: {line}")
-
-    success = expected_output_lines == data_with_line_numbers
+    success = expected_output_lines == assembled
 
     if not success:
         print('Fail!')
@@ -24,7 +16,7 @@ def run_test(path: str):
         for line in expected_output_lines:
             print(line)
         print('Actual')
-        for line in data_with_line_numbers:
+        for line in assembled:
             print(line)
 
     return success

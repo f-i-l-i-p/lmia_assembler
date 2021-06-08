@@ -1,0 +1,8 @@
+; Define constants!
+$my_address = 0xA3
+$my_value = 0x5
+
+main:
+    ldr r0, $my_address ; load data from 0xA3 to register 0
+    add r0, $my_value   ; add 0x5
+    str r0, $my_address ; write back to 0xA3

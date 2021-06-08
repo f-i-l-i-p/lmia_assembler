@@ -1,4 +1,4 @@
 
 main:
-    ; add value 0x1 to register 0
-    ADD, r0, na, 0x1
+    ; add value 0x1 to register 2
+    add r2, 0x1
